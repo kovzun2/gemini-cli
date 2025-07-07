@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полное руководство по Gemini CLI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --text-color: #333;
+            --background-color: #f8f9fa;
+            --sidebar-bg: #f0f2f5;
+            --sidebar-border: #e0e0e0;
+            --code-bg: #e9ecef;
+            --code-text: #c7254e;
+            --link-hover: #0056b3;
+            --heading-color: #212529;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5em;
+            color: var(--heading-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--sidebar-border);
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 8px 12px;
+            display: block;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar ul li ul {
+            margin-top: 5px;
+            margin-left: 15px;
+            border-left: 2px solid var(--sidebar-border);
+            padding-left: 10px;
+        }
+
+        .sidebar ul li ul li a {
+            font-size: 0.9em;
+            padding: 6px 10px;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content h1, .content h2, .content h3, .content h4 {
+            color: var(--heading-color);
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            line-height: 1.2;
+        }
+
+        .content h1 { font-size: 2.5em; }
+        .content h2 { font-size: 2em; }
+        .content h3 { font-size: 1.75em; }
+        .content h4 { font-size: 1.5em; }
+
+        .content p {
+            margin-bottom: 1em;
+        }
+
+        .content ul {
+            margin-bottom: 1em;
+            padding-left: 25px;
+        }
+
+        .content ul li {
+            margin-bottom: 5px;
+        }
+
+        .content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .content a:hover {
+            color: var(--link-hover);
+            text-decoration: underline;
+        }
+
+        .content pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            margin-bottom: 1em;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .content code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .content pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--sidebar-border);
+                box-shadow: none;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <h2>Оглавление</h2>
+        <ul id="menu-list">
+            <li><a href="#полное-руководство-по-gemini-cli">Полное руководство по Gemini CLI</a></li>
+            <li><a href="#1-введение">1. Введение</a>
+                <ul>
+                    <li><a href="#что-такое-gemini-cli">Что такое Gemini CLI?</a></li>
+                    <li><a href="#основные-возможности">Основные возможности</a></li>
+                    <li><a href="#обзор-архитектуры">Обзор архитектуры</a></li>
+                </ul>
+            </li>
+            <li><a href="#2-быстрый-старт">2. Быстрый старт</a>
+                <ul>
+                    <li><a href="#системные-требования">Системные требования</a></li>
+                    <li><a href="#установка-и-запуск">Установка и запуск</a></li>
+                    <li><a href="#первый-запуск">Первый запуск</a></li>
+                </ul>
+            </li>
+            <li><a href="#3-аутентификация">3. Аутентификация</a>
+                <ul>
+                    <li><a href="#методы-аутентификации">Методы аутентификации</a></li>
+                    <li><a href="#хранение-учетных-данных">Хранение учетных данных</a></li>
+                </ul>
+            </li>
+            <li><a href="#4-основы-использования">4. Основы использования</a>
+                <ul>
+                    <li><a href="#интерактивный-и-неинтерактивный-режимы">Интерактивный и неинтерактивный режимы</a></li>
+                </ul>
+            </li>
+            <li><a href="#5-команды-cli">5. Команды CLI</a>
+                <ul>
+                    <li><a href="#слэш-команды-">Слэш-команды (/)</a></li>
+                    <li><a href="#at-команды-">At-команды (@)</a></li>
+                    <li><a href="#shell-команды-">Shell-команды (!)</a></li>
+                </ul>
+            </li>
+            <li><a href="#6-конфигурация">6. Конфигурация</a>
+                <ul>
+                    <li><a href="#уровни-конфигурации">Уровни конфигурации</a></li>
+                    <li><a href="#файл-settingsjson">Файл `settings.json`</a></li>
+                    <li><a href="#переменные-окружения">Переменные окружения</a></li>
+                    <li><a href="#аргументы-командной-строки">Аргументы командной строки</a></li>
+                </ul>
+            </li>
+            <li><a href="#7-контекст-и-память">7. Контекст и Память</a>
+                <ul>
+                    <li><a href="#иерархическая-память-geminimd">Иерархическая память (`GEMINI.md`)</a></li>
+                    <li><a href="#импорт-в-geminimd">Импорт в `GEMINI.md`</a></li>
+                    <li><a href="#инструмент-save_memory">Инструмент `save_memory`</a></li>
+                </ul>
+            </li>
+            <li><a href="#8-инструменты-tools">8. Инструменты (Tools)</a>
+                <ul>
+                    <li><a href="#обзор-инструментов">Обзор инструментов</a></li>
+                    <li><a href="#подробное-описание-встроенных-инструментов">Подробное описание встроенных инструментов</a></li>
+                </ul>
+            </li>
+            <li><a href="#9-расширенные-возможности">9. Расширенные возможности</a>
+                <ul>
+                    <li><a href="#sandboxing-изолированная-среда">Sandboxing (Изолированная среда)</a></li>
+                    <li><a href="#checkpointing-контрольные-точки">Checkpointing (Контрольные точки)</a></li>
+                    <li><a href="#mcp-серверы">MCP Серверы</a></li>
+                    <li><a href="#расширения-extensions">Расширения (Extensions)</a></li>
+                    <li><a href="#телеметрия">Телеметрия</a></li>
+                </ul>
+            </li>
+            <li><a href="#10-для-разработчиков">10. Для разработчиков</a>
+                <ul>
+                    <li><a href="#настройка-окружения">Настройка окружения</a></li>
+                    <li><a href="#процесс-разработки-и-команды">Процесс разработки и команды</a></li>
+                    <li><a href="#тестирование">Тестирование</a></li>
+                    <li><a href="#отладка">Отладка</a></li>
+                    <li><a href="#соглашения-по-коду">Соглашения по коду</a></li>
+                </ul>
+            </li>
+            <li><a href="#11-устранение-неполадок">11. Устранение неполадок</a></li>
+            <li><a href="#12-удаление">12. Удаление</a></li>
+            <li><a href="#13-квоты-цены-и-условия-использования">13. Квоты, Цены и Условия использования</a></li>
+        </ul>
+    </nav>
+    <main class="content">
+        <h1 id="полное-руководство-по-gemini-cli">Полное руководство по Gemini CLI</h1>
+
+<p>Это руководство представляет собой всеобъемлющую инструкцию по установке, использованию и разработке Gemini CLI. Здесь собрана и подробно раскрыта вся необходимая информация из документации проекта, чтобы служить единым источником знаний как для новых, так и для опытных пользователей.</p>
+
+<h2 id="1-введение">1. Введение</h2>
+
+<h3 id="что-такое-gemini-cli">Что такое Gemini CLI?</h3>
+
+<p><strong>Gemini CLI</strong> — это мощный инструмент командной строки для рабочих процессов с использованием ИИ. Он предоставляет интерактивную среду (REPL) для взаимодействия с моделями Gemini прямо из вашего терминала, позволяя подключаться к вашим инструментам, понимать ваш код и ускорять рабочие процессы.</p>
+
+<h3 id="основные-возможности">Основные возможности</h3>
+
+<ul>
+<li><strong>Работа с кодом:</strong> Запрашивайте и редактируйте большие кодовые базы, выходя за рамки стандартного контекстного окна модели.</li>
+<li><strong>Мультимодальность:</strong> Создавайте новые приложения из PDF-файлов, эскизов или изображений.</li>
+<li><strong>Автоматизация:</strong> Автоматизируйте рутинные задачи, такие как запросы к pull-реквестам или сложные rebase-операции в Git.</li>
+<li><strong>Расширяемость:</strong> Используйте инструменты и MCP-серверы для подключения новых возможностей, например, генерации медиа с помощью Imagen.</li>
+<li><strong>Обоснованные ответы:</strong> Интеграция с Google Search позволяет модели давать ответы, подкрепленные информацией из веба.</li>
+</ul>
+
+<h3 id="обзор-архитектуры">Обзор архитектуры</h3>
+
+<p>Gemini CLI имеет модульную архитектуру, состоящую из двух основных пакетов и набора инструментов:</p>
+
+<ol>
+<li><strong>CLI (<code>packages/cli</code>):</strong> Пользовательский интерфейс (frontend). Отвечает за обработку ввода, рендеринг вывода, управление историей и темами оформления.</li>
+<li><strong>Core (<code>packages/core</code>):</strong> Бэкенд-сервер. Управляет взаимодействием с Gemini API, оркестрирует выполнение инструментов, управляет состоянием сессии и конфигурацией.</li>
+<li><strong>Инструменты (<code>packages/core/src/tools/</code>):</strong> Модули, которые позволяют модели взаимодействовать с локальной средой (файловая система, shell, веб).</li>
+</ol>
+
+<p><strong>Типичный поток взаимодействия:</strong></p>
+
+<ol>
+<li>Пользователь вводит запрос в CLI.</li>
+<li>CLI отправляет запрос в Core.</li>
+<li>Core формирует промпт (с историей и списком инструментов) и отправляет его в Gemini API.</li>
+<li>Gemini API отвечает сгенерированным текстом или запросом на вызов инструмента.</li>
+<li>Если запрошен инструмент, Core выполняет его (при необходимости запрашивая подтверждение у пользователя).</li>
+<li>Результат выполнения инструмента отправляется обратно в Gemini API.</li>
+<li>API генерирует финальный ответ на основе результата.</li>
+<li>Core передает ответ в CLI, который отображает его пользователю.</li>
+</ol>
+
+<h2 id="2-быстрый-старт">2. Быстрый старт</h2>
+
+<h3 id="системные-требования">Системные требования</h3>
+
+<ul>
+<li><strong>Node.js:</strong> Версия 18 или выше.</li>
+<li><strong>Git:</strong> Необходим для клонирования репозитория и использования функций, связанных с Git.</li>
+</ul>
+
+<h3 id="установка-и-запуск">Установка и запуск</h3>
+
+<p><strong>Способ 1: <code>npx</code> (без постоянной установки)</strong><br>
+Самый быстрый способ начать. Выполняет последнюю версию прямо из репозитория GitHub.</p>
+
+<pre><code>npx https://github.com/google-gemini/gemini-cli
+</code></pre>
+
+<p><strong>Способ 2: Глобальная установка <code>npm</code></strong><br>
+Устанавливает пакет на вашу систему для легкого доступа.</p>
+
+<pre><code>npm install -g @google/gemini-cli
+gemini
+</code></pre>
+
+<h3 id="первый-запуск">Первый запуск</h3>
+
+<p>При первом запуске CLI проведет вас через простую настройку:</p>
+
+<ol>
+<li><strong>Выбор цветовой темы:</strong> Подберите наиболее комфортную для вас схему.</li>
+<li><strong>Аутентификация:</strong> Войдите в свою учетную запись Google. Это предоставит вам доступ к бесплатному уровню использования Gemini.</li>
+</ol>
+
+<h2 id="3-аутентификация">3. Аутентификация</h2>
+
+<h3 id="методы-аутентификации">Методы аутентификации</h3>
+
+<p>Gemini CLI поддерживает несколько способов аутентификации:</p>
+
+<ol>
+<li><strong>Вход через Google (Gemini Code Assist):</strong>
+    <ul>
+<li><strong>Описание:</strong> Стандартный метод, использующий ваш личный аккаунт Google. При первом запуске открывается браузер для входа.</li>
+<li><strong>Особенности:</strong> Для пользователей Google Workspace или тех, кто находится за пределами поддерживаемых регионов, может потребоваться настройка <code>GOOGLE_CLOUD_PROJECT</code>.</li>
+</ul></li>
+<li><strong>Ключ Gemini API:</strong>
+    <ul>
+<li><strong>Описание:</strong> Использует API-ключ, полученный в <a href="https://aistudio.google.com/app/apikey">Google AI Studio</a>. Предоставляет бесплатный уровень с определенными лимитами и возможность перехода на платный план.</li>
+<li><strong>Настройка:</strong></li>
+</ul></li>
+</ol>
+
+<pre><code>export GEMINI_API_KEY="ВАШ_API_КЛЮЧ"
+</code></pre>
+
+<ol>
+<li><strong>Vertex AI:</strong>
+    <ul>
+<li><strong>Описание:</strong> Для пользователей Google Cloud. Требует настроенного проекта и учетных данных.</li>
+<li><strong>Настройка:</strong></li>
+</ul></li>
+</ol>
+
+<pre><code>gcloud auth application-default login
+export GOOGLE_CLOUD_PROJECT="ВАШ_PROJECT_ID"
+export GOOGLE_CLOUD_LOCATION="ВАШ_РЕГИОН"
+export GOOGLE_GENAI_USE_VERTEXAI=true
+</code></pre>
+
+<h3 id="хранение-учетных-данных">Хранение учетных данных</h3>
+
+<p>Для удобства вы можете хранить переменные окружения в файле <code>.env</code>. CLI ищет его в следующем порядке:</p>
+
+<ol>
+<li><code>.gemini/.env</code> в текущей и родительских директориях.</li>
+<li><code>.env</code> в текущей и родительских директориях.</li>
+<li><code>~/.gemini/.env</code> в домашней директории.</li>
+<li><code>~/.env</code> в домашней директории.</li>
+</ol>
+
+<p><strong>Пример файла <code>.gemini/.env</code>:</strong></p>
+
+<pre><code># Это комментарий
+GEMINI_API_KEY="a1b2c3d4e5f6..."
+GOOGLE_CLOUD_PROJECT="my-gcp-project-123"
+</code></pre>
+
+<h2 id="4-основы-использования">4. Основы использования</h2>
+
+<h3 id="интерактивный-и-неинтерактивный-режимы">Интерактивный и неинтерактивный режимы</h3>
+
+<p><strong>Интерактивный режим (REPL)</strong><br>
+Запускается командой <code>gemini</code>. Позволяет вести диалог с моделью.</p>
+
+<p><em>Пример:</em></p>
+
+<pre><code>cd my-project
+gemini
+&gt; Рефактори этот код в @src/legacy.js, используя современные стандарты ES6.
+</code></pre>
+
+<p><strong>Неинтерактивный режим</strong><br>
+Идеален для скриптов и быстрой автоматизации.</p>
+
+<p><em>Пример с <code>pipe</code>:</em></p>
+
+<pre><code>echo "Напиши функцию на JavaScript, которая суммирует два числа" | gemini
+</code></pre>
+
+<p><em>Пример с флагом <code>-p</code> или <code>--prompt</code>:</em></p>
+
+<pre><code>gemini -p "Как развернуть простое веб-приложение на Firebase?"
+</code></pre>
+
+<h2 id="5-команды-cli">5. Команды CLI</h2>
+
+<h3 id="слэш-команды-">Слэш-команды (<code>/</code>)</h3>
+
+<p>Управляют сессией и интерфейсом.</p>
+
+<ul>
+<li><code>/help</code> или <code>/?</code>: Показать справку.</li>
+<li><code>/bug &lt;описание&gt;</code>: Создать отчет об ошибке.</li>
+<li><code>/chat save &lt;tag&gt;</code>, <code>/chat resume &lt;tag&gt;</code>, <code>/chat list</code>: Управление сессиями чата.
+    <ul>
+<li><strong>Сценарий:</strong> Вы работаете над новой фичей (<code>feature-x</code>) и исследуете подходы. Внезапно появляется срочный баг (<code>bug-123</code>).
+        <ol>
+<li>Сохраните текущий контекст: <code>/chat save feature-x-research</code></li>
+<li>Очистите экран и начните работать над багом: <code>/clear</code>, затем <code>&gt; Проанализируй @src/payments.js, чтобы найти причину бага #123.</code></li>
+<li>После исправления бага вернитесь к работе над фичей. Сначала посмотрите список сохранений: <code>/chat list</code>.</li>
+<li>Возобновите сессию: <code>/chat resume feature-x-research</code>. Ваш предыдущий диалог будет полностью восстановлен.</li>
+</ol></li>
+</ul></li>
+<li><code>/clear</code> (Ctrl+L): Очистить экран.</li>
+<li><code>/compress</code>: Сжать историю чата в краткое резюме.
+    <ul>
+<li><strong>Сценарий:</strong> Ваш диалог стал очень длинным, и вы замечаете, что ответы модели становятся медленнее, так как на каждый запрос отправляется вся история. Вы хотите продолжить обсуждение, но с чистого листа, сохранив при этом суть.
+        <ol>
+<li>Выполните команду: <code>/compress</code></li>
+<li>Gemini проанализирует весь диалог и заменит его на краткое резюме. Например: "Мы обсудили рефакторинг компонента корзины, рассмотрели использование Redux и остановились на подходе с Context API. Следующий шаг - написание тестов."</li>
+<li>Теперь вы можете продолжать диалог, и в контекст будет отправляться только это короткое резюме, экономя токены.</li>
+</ol></li>
+</ul></li>
+<li><code>/stats</code>: Показать статистику по токенам и сессии.</li>
+<li><code>/theme</code>: Открыть диалог смены темы.</li>
+<li><code>/tools [desc|nodesc]</code>: Показать список доступных инструментов.</li>
+<li><code>/quit</code> или <code>/exit</code>: Выйти.</li>
+</ul>
+
+<h3 id="at-команды-">At-команды (<code>@</code>)</h3>
+
+<p>Включают содержимое файлов/директорий в ваш запрос.</p>
+
+<ul>
+<li><code>@&lt;путь&gt;</code>: Вставляет содержимое в запрос.
+    <ul>
+<li><strong>Пример:</strong> <code>Создай документацию для функции в файле @src/api.ts</code></li>
+<li><strong>Пример:</strong> <code>Проанализируй зависимости в @package.json и предложи оптимизации.</code></li>
+</ul></li>
+<li>По умолчанию файлы из <code>.gitignore</code> исключаются.</li>
+</ul>
+
+<h3 id="shell-команды-">Shell-команды (<code>!</code>)</h3>
+
+<p>Взаимодействие с системной оболочкой.</p>
+
+<ul>
+<li><code>!&lt;команда&gt;</code>: Выполнить shell-команду.
+    <ul>
+<li><strong>Пример:</strong> <code>!npm install</code></li>
+</ul></li>
+<li><code>!</code>: Переключить "режим оболочки" для прямого ввода команд.</li>
+</ul>
+
+<h2 id="6-конфигурация">6. Конфигурация</h2>
+
+<h3 id="уровни-конфигурации">Уровни конфигурации</h3>
+
+<p>Настройки применяются в порядке возрастания приоритета:</p>
+
+<ol>
+<li>Значения по умолчанию.</li>
+<li>Пользовательский <code>settings.json</code> (<code>~/.gemini/settings.json</code>).</li>
+<li>Проектный <code>settings.json</code> (<code>./.gemini/settings.json</code>).</li>
+<li>Переменные окружения (включая <code>.env</code> файлы).</li>
+<li>Аргументы командной строки.</li>
+</ol>
+
+<h3 id="файл-settingsjson">Файл <code>settings.json</code></h3>
+
+<p>Основной файл для постоянной конфигурации.</p>
+
+<p><strong>Ключевые параметры:</strong></p>
+
+<ul>
+<li><code>theme</code> (string): Название темы (см. <code>/theme</code>).</li>
+<li><code>sandbox</code> (boolean|string): Настройка песочницы (<code>true</code>, <code>"docker"</code>, <code>"podman"</code>).</li>
+<li><code>coreTools</code> (array): Белый список инструментов. Можно ограничивать команды: <code>"ShellTool(git)"</code>.</li>
+<li><code>excludeTools</code> (array): Черный список инструментов: <code>"ShellTool(rm)"</code>.</li>
+<li><code>mcpServers</code> (object): Конфигурация MCP-серверов.</li>
+<li><code>checkpointing</code> (object): Включение и настройка контрольных точек.</li>
+<li><code>telemetry</code> (object): Настройка сбора телеметрии.</li>
+<li><code>autoAccept</code> (boolean): Авто-подтверждение "безопасных" вызовов инструментов.</li>
+</ul>
+
+<p><strong>Пример файла <code>settings.json</code>:</strong></p>
+
+<pre><code>{
+  "theme": "Dracula",
+  "sandbox": "docker",
+  "autoAccept": true,
+  "checkpointing": { "enabled": true }
+}
+</code></pre>
+
+<h3 id="переменные-окружения">Переменные окружения</h3>
+
+<ul>
+<li><code>GEMINI_API_KEY</code>: Ключ API.</li>
+<li><code>GEMINI_MODEL</code>: Модель по умолчанию (напр., <code>gemini-1.5-flash</code>).</li>
+<li><code>DEBUG</code>: Включает режим отладки.</li>
+</ul>
+
+<h3 id="аргументы-командной-строки">Аргументы командной строки</h3>
+
+<p>Переопределяют все другие настройки для текущей сессии.</p>
+
+<ul>
+<li><code>--model &lt;имя&gt;</code>: Использовать указанную модель.</li>
+<li><code>--prompt &lt;запрос&gt;</code>: Неинтерактивный режим.</li>
+<li><code>--sandbox</code>: Включить песочницу.</li>
+<li><code>--checkpointing</code>: Включить контрольные точки.</li>
+<li><code>--yolo</code>: Автоматически подтверждать все вызовы инструментов (включает песочницу).</li>
+</ul>
+
+<h2 id="7-контекст-и-память">7. Контекст и Память</h2>
+
+<h3 id="иерархическая-память-geminimd">Иерархическая память (<code>GEMINI.md</code>)</h3>
+
+<p>Файлы <code>GEMINI.md</code> предоставляют модели постоянный контекст и инструкции.</p>
+
+<p><strong>Порядок загрузки:</strong></p>
+
+<ol>
+<li><strong>Глобальный:</strong> <code>~/.gemini/GEMINI.md</code></li>
+<li><strong>Проектный:</strong> От корня проекта до текущей директории.</li>
+<li><strong>Локальный:</strong> В поддиректориях.</li>
+</ol>
+
+<p><strong>Пример файла <code>GEMINI.md</code> в корне проекта:</strong></p>
+
+<pre><code># Руководство по стилю для проекта "Omega"
+- Используй TypeScript.
+- Форматирование: Prettier с настройками по умолчанию.
+- Комментарии: JSDoc для всех экспортируемых функций.
+- Тесты: Используй Jest. Каждый PR должен содержать тесты.
+</code></pre>
+
+<h3 id="импорт-в-geminimd">Импорт в <code>GEMINI.md</code></h3>
+
+<p>Используйте <code>@&lt;путь_к_файлу.md&gt;</code> для модульности.</p>
+
+<p><strong>Пример:</strong></p>
+
+<pre><code># Основной GEMINI.md
+@./docs/style_guide.md
+@./docs/api_conventions.md
+</code></pre>
+
+<h3 id="инструмент-save_memory">Инструмент <code>save_memory</code></h3>
+
+<p>Позволяет модели сохранять факты между сессиями.</p>
+
+<p><strong>Пример диалога:</strong><br>
+<code>&gt; Запомни: мой любимый фреймворк - Svelte.</code><br>
+Модель вызовет: <code>save_memory(fact="Любимый фреймворк пользователя - Svelte.")</code></p>
+
+<h2 id="8-инструменты-tools">8. Инструменты (Tools)</h2>
+
+<h3 id="обзор-инструментов">Обзор инструментов</h3>
+
+<p>Инструменты - это функции, которые модель может вызывать для взаимодействия с окружением.</p>
+
+<h3 id="подробное-описание-встроенных-инструментов">Подробное описание встроенных инструментов</h3>
+
+<ul>
+<li><strong><code>list_directory</code></strong>: Показывает содержимое папки.
+    <ul>
+<li><code>&gt; Что находится в папке src?</code></li>
+</ul></li>
+<li><strong><code>read_file</code></strong>: Читает файл (текст, изображения, PDF).
+    <ul>
+<li><code>&gt; Прочитай README.md и сделай краткое резюме.</code></li>
+</ul></li>
+<li><strong><code>write_file</code></strong>: Записывает или перезаписывает файл.
+    <ul>
+<li><code>&gt; Создай файл .gitignore и добавь в него node_modules.</code></li>
+</ul></li>
+<li><strong><code>glob</code></strong>: Находит файлы по шаблону.
+    <ul>
+<li><code>&gt; Найди все .css файлы в проекте.</code></li>
+</ul></li>
+<li><strong><code>search_file_content</code></strong>: Ищет текст в файлах.
+    <ul>
+<li><code>&gt; Где в коде используется функция 'calculateTotal'?</code></li>
+</ul></li>
+<li><strong><code>replace</code></strong>: Заменяет текст в файле.
+    <ul>
+<li><code>&gt; Замени во всех файлах http://api.dev на https://api.prod.</code></li>
+</ul></li>
+<li><strong><code>run_shell_command</code></strong>: Выполняет команду в оболочке.
+    <ul>
+<li><code>&gt; Установи зависимости, выполнив npm install.</code></li>
+</ul></li>
+<li><strong><code>web_fetch</code></strong>: Получает содержимое веб-страниц.
+    <ul>
+<li><code>&gt; Сравни содержание двух статей: [URL1] и [URL2].</code></li>
+</ul></li>
+<li><strong><code>google_web_search</code></strong>: Выполняет поиск в Google.
+    <ul>
+<li><code>&gt; Какие последние новости о выходе Angular 20?</code></li>
+</ul></li>
+</ul>
+
+<h2 id="9-расширенные-возможности">9. Расширенные возможности</h2>
+
+<h3 id="sandboxing-изолированная-среда">Sandboxing (Изолированная среда)</h3>
+
+<p>Изолирует выполнение команд для безопасности.</p>
+
+<ul>
+<li><strong>Методы:</strong> <code>sandbox-exec</code> (macOS), <code>docker</code>, <code>podman</code>.</li>
+<li><strong>Включение:</strong> Флаг <code>--sandbox</code> или <code>"sandbox": true</code> в <code>settings.json</code>.</li>
+</ul>
+
+<h3 id="checkpointing-контрольные-точки">Checkpointing (Контрольные точки)</h3>
+
+<p>Автоматически сохраняет состояние проекта перед изменениями.</p>
+
+<ul>
+<li><strong>Включение:</strong> Флаг <code>--checkpointing</code> или <code>"checkpointing": { "enabled": true }</code>.</li>
+<li><strong>Использование:</strong> <code>/restore</code> для отката.</li>
+</ul>
+
+<h3 id="mcp-серверы">MCP Серверы</h3>
+
+<p>Позволяют подключать кастомные наборы инструментов.</p>
+
+<ul>
+<li><strong>Настройка:</strong> Через <code>mcpServers</code> в <code>settings.json</code>.</li>
+<li><strong>Пример:</strong> Подключение сервера для работы с GitHub для создания issues прямо из CLI.</li>
+</ul>
+
+<h3 id="расширения-extensions">Расширения (Extensions)</h3>
+
+<p>Способ упаковать и распространять конфигурации, включая MCP-серверы и <code>GEMINI.md</code>.</p>
+
+<ul>
+<li><strong>Расположение:</strong> <code>~/.gemini/extensions/</code> и <code>./.gemini/extensions/</code>.</li>
+</ul>
+
+<h3 id="телеметрия">Телеметрия</h3>
+
+<p>Сбор данных о производительности для отладки.</p>
+
+<ul>
+<li><strong>Включение:</strong> Флаг <code>--telemetry</code> или <code>"telemetry": { "enabled": true }</code>.</li>
+<li><strong>Просмотр:</strong> Запустите локальный коллектор (<code>npm run telemetry -- --target=local</code>) и откройте Jaeger UI.</li>
+</ul>
+
+<h2 id="10-для-разработчиков">10. Для разработчиков</h2>
+
+<h3 id="настройка-окружения">Настройка окружения</h3>
+
+<ol>
+<li><code>git clone https://github.com/google-gemini/gemini-cli.git</code></li>
+<li><code>cd gemini-cli</code></li>
+<li><code>npm install</code></li>
+</ol>
+
+<h3 id="процесс-разработки-и-команды">Процесс разработки и команды</h3>
+
+<ul>
+<li><code>npm run build</code>: Собрать проект.</li>
+<li><code>npm start</code>: Запустить в режиме разработки.</li>
+<li><code>npm run preflight</code>: <strong>Обязательная</strong> полная проверка перед коммитом.</li>
+</ul>
+
+<h3 id="тестирование">Тестирование</h3>
+
+<ul>
+<li><code>npm run test</code>: Unit-тесты.</li>
+<li><code>npm run test:e2e</code>: Интеграционные тесты.</li>
+</ul>
+
+<h3 id="отладка">Отладка</h3>
+
+<ul>
+<li><code>npm run debug</code>: Запуск в режиме отладки для подключения из VS Code.</li>
+<li><code>DEV=true npm start</code>: Запуск для подключения React DevTools.</li>
+</ul>
+
+<h3 id="соглашения-по-коду">Соглашения по коду</h3>
+
+<ul>
+<li>Придерживайтесь существующего стиля.</li>
+<li>Предпочитайте простые объекты с интерфейсами TypeScript вместо классов.</li>
+<li>Используйте <code>import</code>/<code>export</code> для инкапсуляции.</li>
+<li>Избегайте <code>any</code>, используйте <code>unknown</code>.</li>
+</ul>
+
+<h2 id="11-устранение-неполадок">11. Устранение неполадок</h2>
+
+<ul>
+<li><strong>Ошибка <code>Failed to login</code>:</strong> Если у вас аккаунт Workspace, попробуйте установить <code>GOOGLE_CLOUD_PROJECT</code> или использовать API-ключ.</li>
+<li><strong>Ошибка <code>EADDRINUSE</code>:</strong> Порт занят. Остановите процесс, использующий порт.</li>
+<li><strong>CLI не интерактивен:</strong> Проверьте переменные окружения <code>CI_</code>.</li>
+</ul>
+
+<h2 id="12-удаление">12. Удаление</h2>
+
+<ul>
+<li><strong><code>npx</code>:</strong> Очистите кэш <code>npx</code>: <code>rm -rf "$(npm config get cache)/_npx"</code> (macOS/Linux).</li>
+<li><strong>Глобальная установка:</strong> <code>npm uninstall -g @google/gemini-cli</code>.</li>
+</ul>
+
+<h2 id="13-квоты-цены-и-условия-использования">13. Квоты, Цены и Условия использования</h2>
+
+<p>Квоты, цены и политика конфиденциальности <strong>напрямую зависят от вашего метода аутентификации</strong>.</p>
+
+<ul>
+<li><strong>Login with Google / Gemini API (бесплатный уровень):</strong>
+    <ul>
+<li><strong>Данные:</strong> Ваши промпты и код <strong>могут использоваться</strong> для улучшения продуктов Google, включая тренировку моделей.</li>
+</ul></li>
+<li><strong>Gemini API (платный), Workspace, Vertex AI:</strong>
+    <ul>
+<li><strong>Данные:</strong> Ваши данные <strong>конфиденциальны</strong> и не используются для тренировки моделей.</li>
+</ul></li>
+</ul>
+
+<p>Вы можете отключить сбор анонимной статистики использования (<code>"usageStatisticsEnabled": false</code> в <code>settings.json</code>), но это не меняет политику использования данных для тренировки моделей, которая определяется вашим типом аккаунта.</p>
+    </main>
+</body>
+</html>
